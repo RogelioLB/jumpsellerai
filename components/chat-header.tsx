@@ -13,6 +13,9 @@ import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { type VisibilityType, VisibilitySelector } from './visibility-selector';
 import type { Session } from 'next-auth';
+import { ShoppingCartIcon } from 'lucide-react';
+import { useCart } from '@/store/useCart';
+import { useCartSidebar } from '@/store/useCartSidebar';
 
 function PureChatHeader({
   chatId,
@@ -28,15 +31,17 @@ function PureChatHeader({
   session: Session;
 }) {
   const router = useRouter();
-  const { open } = useSidebar();
+  const { open: sidebarOpen } = useSidebar();
+  const { items } = useCart();
+  const { open: openCart } = useCartSidebar()
 
   const { width: windowWidth } = useWindowSize();
 
   return (
-    <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
-      <SidebarToggle />
-
-      {(!open || windowWidth < 768) && (
+    <header className="flex sticky justify-between top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
+      <div className="flex items-center gap-2">
+        <SidebarToggle />
+        {(!sidebarOpen || windowWidth < 768) && (
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -55,13 +60,6 @@ function PureChatHeader({
         </Tooltip>
       )}
 
-      {!isReadonly && (
-        <ModelSelector
-          session={session}
-          selectedModelId={selectedModelId}
-          className="order-1 md:order-2"
-        />
-      )}
 
       {!isReadonly && (
         <VisibilitySelector
@@ -70,6 +68,18 @@ function PureChatHeader({
           className="order-1 md:order-3"
         />
       )}
+      </div>
+
+      <Button
+        variant="outline"
+        className="order-1 md:order-4 relative"
+        onClick={() => openCart()}
+      >
+        <ShoppingCartIcon />
+        {items.length > 0 && (
+          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 bg-primary text-primary-foreground rounded-full size-5" >{items.length}</span>
+        )}
+      </Button>
     </header>
   );
 }

@@ -19,6 +19,9 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import Products from './tools/products';
+import Tracking from './tools/tracking';
+import Product from './tools/product';
 
 const PurePreviewMessage = ({
   chatId,
@@ -156,7 +159,6 @@ const PurePreviewMessage = ({
               if (type === 'tool-invocation') {
                 const { toolInvocation } = part;
                 const { toolName, toolCallId, state } = toolInvocation;
-
                 if (state === 'call') {
                   const { args } = toolInvocation;
 
@@ -192,29 +194,16 @@ const PurePreviewMessage = ({
                   const { result } = toolInvocation;
 
                   return (
-                    <div key={toolCallId}>
-                      {toolName === 'getWeather' ? (
-                        <Weather weatherAtLocation={result} />
-                      ) : toolName === 'createDocument' ? (
-                        <DocumentPreview
-                          isReadonly={isReadonly}
-                          result={result}
-                        />
-                      ) : toolName === 'updateDocument' ? (
-                        <DocumentToolResult
-                          type="update"
-                          result={result}
-                          isReadonly={isReadonly}
-                        />
-                      ) : toolName === 'requestSuggestions' ? (
-                        <DocumentToolResult
-                          type="request-suggestions"
-                          result={result}
-                          isReadonly={isReadonly}
-                        />
-                      ) : (
-                        <pre>{JSON.stringify(result, null, 2)}</pre>
-                      )}
+                    <div key={toolCallId} className="w-full">
+                      { toolName === "getProducts" ? (
+                        <Products result={result.products} />
+                      ) : toolName === "trackOrder" ? (
+                        <Tracking data={result.data} />
+                      ) :toolName === "searchProduct" ? (
+                        <Product product={result.product} />
+                      ) : toolName === "getProductsByCategory" ? (
+                        <Products result={result || []} />
+                      ) : null}
                     </div>
                   );
                 }

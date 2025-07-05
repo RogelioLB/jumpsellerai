@@ -6,7 +6,7 @@ import {
   streamText,
 } from 'ai';
 import { auth, type UserType } from '@/app/(auth)/auth';
-import { type RequestHints, systemPrompt } from '@/lib/ai/prompts';
+import { systemPrompt } from '@/app/(chat)/api/chat/prompt';
 import {
   createStreamId,
   deleteChatById,
@@ -36,6 +36,16 @@ import { after } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
 import { ChatSDKError } from '@/lib/errors';
+import searchProduct from './tools/searchProduct';
+import getProducts from './tools/getProducts';
+import searchProducts from './tools/searchProducts';
+import findCustomer from './tools/findCustomer';
+import getCustomerOrders from './tools/getCustomerOrders';
+import getDiscounts from './tools/getDiscounts';
+import trackOrder from './tools/trackOrder';
+import { getContext } from '@/lib/ai/tools/get-context';
+import { getCategories } from './tools/getCategories';
+import { getProductsByCategory } from './tools/getProductsByCategory';
 
 export const maxDuration = 60;
 
@@ -119,15 +129,6 @@ export async function POST(request: Request) {
       message,
     });
 
-    const { longitude, latitude, city, country } = geolocation(request);
-
-    const requestHints: RequestHints = {
-      longitude,
-      latitude,
-      city,
-      country,
-    };
-
     await saveMessages({
       messages: [
         {
@@ -148,28 +149,37 @@ export async function POST(request: Request) {
       execute: (dataStream) => {
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          system: systemPrompt,
           messages,
           maxSteps: 5,
           experimental_activeTools:
             selectedChatModel === 'chat-model-reasoning'
               ? []
               : [
-                  'getWeather',
-                  'createDocument',
-                  'updateDocument',
-                  'requestSuggestions',
+                "getProducts",
+                "searchProduct",
+                "searchProducts",
+                "findCustomer",
+                "getCustomerOrders",
+                "getDiscounts",
+                "trackOrder",
+                "getContext",
+                "getCategories",
+                "getProductsByCategory",
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           experimental_generateMessageId: generateUUID,
           tools: {
-            getWeather,
-            createDocument: createDocument({ session, dataStream }),
-            updateDocument: updateDocument({ session, dataStream }),
-            requestSuggestions: requestSuggestions({
-              session,
-              dataStream,
-            }),
+            searchProduct,
+            getProducts,
+            searchProducts,
+            findCustomer,
+            getCustomerOrders,
+            getDiscounts,
+            trackOrder,
+            getContext,
+            getCategories,
+            getProductsByCategory,
           },
           onFinish: async ({ response }) => {
             if (session.user?.id) {

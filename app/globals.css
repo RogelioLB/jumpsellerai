@@ -162,3 +162,37 @@
 .suggestion-highlight {
     @apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
 }
+
+/* Estilos para el sidebar del carrito */
+html[data-sidebar-right-open="true"],
+html[data-sidebar-right-open="true"] body {
+    @apply overflow-hidden;
+    max-width: 100vw;
+}
+
+/* Fondo oscuro que aparece cuando el carrito está abierto */
+html[data-sidebar-right-open="true"]::before {
+    content: "";
+    @apply fixed inset-0 bg-black/50 z-40 cursor-pointer;
+}
+
+/* Ajuste para que el carrito aparezca desde la derecha */
+[data-side="right"] {
+    @apply fixed right-0 left-auto top-0 bottom-0 w-full sm:w-96 md:w-[30rem] max-w-full;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    display: block !important;
+}
+
+/* Garantizar que el sidebar del carrito esté por encima de otros elementos */
+[data-sidebar-right-open="true"] [data-side="right"] {
+    @apply z-50 shadow-xl;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ocultar el sidebar del carrito cuando está cerrado */
+html:not([data-sidebar-right-open="true"]) [data-side="right"] {
+    @apply translate-x-full;
+    pointer-events: none;
+}
