@@ -12,12 +12,14 @@ export const getProductsByCategory = tool({
       }),
       execute: async ({ categoryId }) => {
         const products: ProductResponse[] = await Jumpseller.getProductsByCategory(categoryId);
+        console.log(products[0].product)
         return products.map(({product})=>({
             id: product.id,
             name: product.name,
             price: product.price,
             images: product.images,
             categories: product.categories.map(cat=>cat.name),
+            meta_description: product.meta_description,
           }));
       },
 })

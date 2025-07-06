@@ -50,7 +50,7 @@ export default function Products({ result }: { result: Product[] }) {
     const ProductCard = ({ product }: { product: Product }) => (
         <Card className="overflow-hidden flex flex-col h-full max-w-full">
             <CardHeader className="p-2">
-                <CardTitle className="line-clamp-2 text-xs sm:text-sm">{product.name}</CardTitle>
+                <CardTitle className="line-clamp-2 text-sm">{product.name}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center p-2">
                 <div className="relative size-20 mb-2">
@@ -58,13 +58,17 @@ export default function Products({ result }: { result: Product[] }) {
                         fill
                         src={product.images?.[0]?.url || '/placeholder.jpg'} 
                         alt={product.name} 
-                        className="object-cover rounded-md" 
+                        className="object-cover rounded-md bg-white" 
                         sizes="80px"
                         priority
                     />
                 </div>
                 <p className="text-xs sm:text-sm font-semibold mt-1 truncate w-full text-center">
                     {formatPrice(Number(product.price))}
+                </p>
+                <p className="text-xs sm:text-sm font-light mt-1 w-full line-clamp-4">
+                    {//Remove all html tags
+                    product.meta_description.replace(/<[^>]*>/g, '')}
                 </p>
             </CardContent>
             <CardFooter className="p-2 pt-0">
@@ -130,7 +134,7 @@ export default function Products({ result }: { result: Product[] }) {
                                 style={{ overflow: "hidden" }}
                                 className="mt-2 border-t pt-2"
                             >
-                                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 w-full">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                                     {/* Mostrar todos los productos excepto los primeros 4 que ya se muestran */}
                                     {products.slice(4).map((product) => (
                                         <div key={product.id} className="overflow-hidden">

@@ -46,6 +46,7 @@ import trackOrder from './tools/trackOrder';
 import { getContext } from '@/lib/ai/tools/get-context';
 import { getCategories } from './tools/getCategories';
 import { getProductsByCategory } from './tools/getProductsByCategory';
+import { openai } from '@ai-sdk/openai';
 
 export const maxDuration = 60;
 
@@ -148,7 +149,7 @@ export async function POST(request: Request) {
     const stream = createDataStream({
       execute: (dataStream) => {
         const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
+          model: openai("gpt-4.1-nano"),
           system: systemPrompt,
           messages,
           maxSteps: 5,
@@ -156,9 +157,7 @@ export async function POST(request: Request) {
             selectedChatModel === 'chat-model-reasoning'
               ? []
               : [
-                "getProducts",
                 "searchProduct",
-                "searchProducts",
                 "findCustomer",
                 "getCustomerOrders",
                 "getDiscounts",
@@ -171,8 +170,6 @@ export async function POST(request: Request) {
           experimental_generateMessageId: generateUUID,
           tools: {
             searchProduct,
-            getProducts,
-            searchProducts,
             findCustomer,
             getCustomerOrders,
             getDiscounts,

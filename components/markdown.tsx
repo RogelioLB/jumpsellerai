@@ -91,6 +91,11 @@ const components: Partial<Components> = {
       </h6>
     );
   },
+  img: ({ node, children, ...props }) => {
+    return (
+      <img className="hidden" {...props} />
+    );
+  },
 };
 
 const remarkPlugins = [remarkGfm];
