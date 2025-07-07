@@ -9,6 +9,11 @@ import { SessionProvider } from 'next-auth/react';
 export const metadata: Metadata = {
   title: 'KreadoresPro',
   description: 'Chatbot para tiendas Jumpseller',
+  icons: [
+    {
+      url: "https://perceivoai.agency/DarkLogo.jpg",
+    },
+  ],
 };
 
 export const viewport = {
