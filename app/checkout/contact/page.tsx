@@ -4,6 +4,18 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { ArrowLeft, ArrowRight, Mail, MapPin, Phone, ShoppingBag, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface FormData {
   name: string;
@@ -107,10 +119,11 @@ export default function ContactPage() {
   }, [formData.region]);
 
   const handleChange = (field: keyof FormData, value: string) => {
+    // Tratar "placeholder" como valor vacío
+    const processedValue = value === "placeholder" ? "" : value;
     setFormData({
       ...formData,
-      [field]: value,
-      // Reset municipality when region changes
+      [field]: processedValue,
       ...(field === "region" ? { municipality: "" } : {}),
     });
   };
@@ -134,284 +147,249 @@ export default function ContactPage() {
   // If cart is empty, show a message and a button to go back to the main page
   if (cartEmpty) {
     return (
-      <div className="container mx-auto px-4 py-16 bg-white dark:bg-zinc-950 text-gray-800 dark:text-gray-100">
-        <div className="max-w-md mx-auto text-center">
-          <div className="mb-8">
-            <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto">
-              <ShoppingBag className="text-blue-600 dark:text-blue-300 text-3xl" />
+      <div className="container mx-auto px-4 py-16">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="pt-6 text-center">
+            <div className="mb-8">
+              <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                <ShoppingBag className="text-primary text-3xl" />
+              </div>
             </div>
-          </div>
-          <h1 className="text-2xl font-bold mb-4">Tu carrito está vacío</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Parece que aún no has agregado productos a tu carrito de compras.
-          </p>
-          <button
-            onClick={() => router.push("/")}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center mx-auto"
-          >
-            <ArrowLeft className="mr-2" /> Ir a la tienda
-          </button>
-        </div>
+            <h1 className="text-2xl font-bold mb-4">Tu carrito está vacío</h1>
+            <p className="text-muted-foreground mb-8">
+              Parece que aún no has agregado productos a tu carrito de compras.
+            </p>
+            <Button
+              onClick={() => router.push("/")}
+              className="mx-auto"
+            >
+              <ArrowLeft className="mr-2" size={16} /> Ir a la tienda
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-white dark:bg-zinc-950 text-gray-800 dark:text-gray-100">
-      <div className="max-w-3xl mx-auto">
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-8 text-center">Checkout</h1>
+
         {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
-                1
+        <Card className="mb-8">
+          <CardContent>
+            <div className="flex items-center justify-between py-2">
+              <div className="flex flex-col items-center">
+                <div className="size-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground">
+                  1
+                </div>
+                <span className="text-sm mt-2">Contacto</span>
               </div>
-              <span className="text-sm mt-2">Contacto</span>
-            </div>
-            <div className="flex-1 h-1 mx-4 bg-gray-300">
-              <div className="h-full w-0 bg-blue-600"></div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">
-                2
+              <div className="flex-1 h-1 mx-4 bg-muted">
+                <div className="h-full w-0 bg-primary"></div>
               </div>
-              <span className="text-sm mt-2">Envío</span>
-            </div>
-            <div className="flex-1 h-1 mx-4 bg-gray-300">
-              <div className="h-full w-0 bg-blue-600"></div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">
-                3
+              <div className="flex flex-col items-center">
+                <div className="size-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground">
+                  2
+                </div>
+                <span className="text-sm mt-2">Envío</span>
               </div>
-              <span className="text-sm mt-2">Pago</span>
+              <div className="flex-1 h-1 mx-4 bg-muted"></div>
+              <div className="flex flex-col items-center">
+                <div className="size-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground">
+                  3
+                </div>
+                <span className="text-sm mt-2">Pago</span>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+        
+        <form onSubmit={handleSubmit}>
+          <Card className="mb-8">
+            <CardHeader className="pb-2">
+              <div className="flex items-center">
+                <div className="size-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-4">
+                  <User size={20} />
+                </div>
+                <CardTitle>Información de Contacto</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nombre</Label>
+                  <Input
+                    type="text"
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    required
+                    placeholder="Ingresa tu nombre"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="surname">Apellido</Label>
+                  <Input
+                    type="text"
+                    id="surname"
+                    value={formData.surname}
+                    onChange={(e) => handleChange("surname", e.target.value)}
+                    required
+                    placeholder="Ingresa tu apellido"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    required
+                    placeholder="correo@ejemplo.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Teléfono</Label>
+                  <Input
+                    type="tel"
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => handleChange("phone", e.target.value)}
+                    required
+                    placeholder="+569 XXXX XXXX"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Información de Contacto
-        </h1>
-
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-md"
-        >
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <User className="mr-2" /> Datos Personales
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Nombre
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  required
-                  placeholder="Ingresa tu nombre"
-                />
+          <Card className="mb-8">
+            <CardHeader className="pb-2">
+              <div className="flex items-center">
+                <div className="size-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-4">
+                  <MapPin size={20} />
+                </div>
+                <CardTitle>Dirección de Envío</CardTitle>
               </div>
-              <div>
-                <label
-                  htmlFor="surname"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Apellido
-                </label>
-                <input
-                  type="text"
-                  id="surname"
-                  value={formData.surname}
-                  onChange={(e) => handleChange("surname", e.target.value)}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  required
-                  placeholder="Ingresa tu apellido"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium mb-1 flex items-center"
-                >
-                  <Mail className="mr-1" /> Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  required
-                  placeholder="ejemplo@correo.com"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="text-sm font-medium mb-1 flex items-center"
-                >
-                  <Phone className="mr-1" /> Teléfono
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  required
-                  placeholder="+56 9 XXXX XXXX"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <MapPin className="mr-2" /> Dirección de Envío
-            </h2>
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <label
-                  htmlFor="address"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Dirección
-                </label>
-                <input
+            </CardHeader>
+            
+            <CardContent className="pt-6">
+              <div className="space-y-2 mb-4">
+                <Label htmlFor="address">Dirección</Label>
+                <Input
                   type="text"
                   id="address"
                   value={formData.address}
                   onChange={(e) => handleChange("address", e.target.value)}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   required
-                  placeholder="Calle, número, departamento"
+                  placeholder="Ingresa tu dirección completa"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="region"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Región
-                  </label>
-                  <select
-                    id="region"
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="region">Región</Label>
+                  <Select 
                     value={formData.region}
-                    onChange={(e) => handleChange("region", e.target.value)}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    required
+                    onValueChange={(value) => handleChange("region", value)}
                   >
-                    <option value="">Selecciona una región</option>
-                    {regions.map((region) => (
-                      <option key={region.code} value={region.code}>
-                        {region.name}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="region">
+                      <SelectValue placeholder="Selecciona una región" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="placeholder" disabled>Selecciona una región</SelectItem>
+                      {regions.map((region) => (
+                        <SelectItem key={region.code} value={region.code}>
+                          {region.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div>
-                  <label
-                    htmlFor="municipality"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Comuna
-                  </label>
-                  <select
-                    id="municipality"
+                <div className="space-y-2">
+                  <Label htmlFor="municipality">Comuna</Label>
+                  <Select
                     value={formData.municipality}
-                    onChange={(e) =>
-                      handleChange("municipality", e.target.value)
-                    }
-                    className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    required
+                    onValueChange={(value) => handleChange("municipality", value)}
                     disabled={!formData.region || fetchingMunicipalities}
                   >
-                    <option value="">
-                      {fetchingMunicipalities
-                        ? "Cargando comunas..."
-                        : formData.region
-                        ? "Selecciona una comuna"
-                        : "Primero selecciona una región"}
-                    </option>
-                    {municipalities.map((municipality) => (
-                      <option key={municipality.code} value={municipality.code}>
-                        {municipality.name}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="municipality">
+                      <SelectValue placeholder={
+                        fetchingMunicipalities
+                          ? "Cargando comunas..."
+                          : formData.region
+                          ? "Selecciona una comuna"
+                          : "Primero selecciona una región"
+                      } />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="placeholder" disabled>Selecciona una comuna</SelectItem>
+                      {municipalities.map((municipality) => (
+                        <SelectItem key={municipality.code} value={municipality.code}>
+                          {municipality.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="city"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Ciudad
-                  </label>
-                  <input
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="city">Ciudad</Label>
+                  <Input
                     type="text"
                     id="city"
                     value={formData.city}
                     onChange={(e) => handleChange("city", e.target.value)}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required
                     placeholder="Ingresa tu ciudad"
                   />
                 </div>
-                <div>
-                  <label
-                    htmlFor="postal"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Código Postal (opcional)
-                  </label>
-                  <input
+                <div className="space-y-2">
+                  <Label htmlFor="postal">Código Postal (opcional)</Label>
+                  <Input
                     type="text"
                     id="postal"
                     value={formData.postal}
                     onChange={(e) => handleChange("postal", e.target.value)}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="Ej: 7500000"
                   />
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           <div className="flex justify-between mt-8">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => router.push("/")}
-              className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center"
+              className="flex items-center"
             >
               <ArrowLeft className="mr-2" /> Volver al Carrito
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors flex items-center"
+              className="flex items-center"
             >
               {isLoading ? (
                 <>
                   <span className="mr-2">Cargando...</span>
-                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                  <div className="animate-spin size-4 border-2 border-current border-t-transparent rounded-full"></div>
                 </>
               ) : (
                 <>
                   Continuar a Envío <ArrowRight className="ml-2" />
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

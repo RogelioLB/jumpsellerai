@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/store/useCart';
 import { ShippingMethod } from '@/jumpseller/types';
 import { CartItem } from '@/store/cartStore';
-import { ArrowLeft, ArrowRight, MapPin, Truck, Package, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MapPin, Truck, Package, Check, User, ShoppingBag } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 
 interface ContactData {
   name: string;
@@ -145,10 +149,76 @@ export default function ShippingPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh] bg-white dark:bg-zinc-950 text-gray-800 dark:text-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Cargando métodos de envío...</p>
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-2xl font-bold mb-8 text-center">Checkout</h1>
+          
+          {/* Progress Steps */}
+          <Card className="mb-8">
+            <CardContent>
+              <div className="flex items-center justify-between py-2">
+                <div className="flex flex-col items-center">
+                  <div className="size-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground">
+                    1
+                  </div>
+                  <span className="text-sm mt-2">Contacto</span>
+                </div>
+                <div className="flex-1 h-1 mx-4 bg-primary">
+                  <div className="size-full bg-primary"></div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="size-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground">
+                    2
+                  </div>
+                  <span className="text-sm mt-2">Envío</span>
+                </div>
+                <div className="flex-1 h-1 mx-4 bg-muted"></div>
+                <div className="flex flex-col items-center">
+                  <div className="size-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground">
+                    3
+                  </div>
+                  <span className="text-sm mt-2">Pago</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+
+          
+          {/* Skeleton loaders */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader className="animate-pulse">
+                <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-1/2 animate-pulse"></div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[1, 2].map((i) => (
+                  <Card key={i} className="border border-gray-200 dark:border-gray-700">
+                    <div className="p-4 flex items-center animate-pulse">
+                      <div className="size-5 rounded-full bg-gray-300 dark:bg-gray-600 mr-3"></div>
+                      <div className="space-y-2 grow">
+                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );
@@ -158,21 +228,25 @@ export default function ShippingPage() {
     return (
       <div className="container mx-auto px-4 py-8 bg-white dark:bg-zinc-950 text-gray-800 dark:text-gray-100">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-6 py-4 rounded-lg shadow-md" role="alert">
-            <h2 className="font-bold text-lg mb-2 flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-              Error al cargar métodos de envío
-            </h2>
-            <p className="mb-4">{error}</p>
-            <button 
-              className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
-              onClick={() => router.push('/checkout/contact')}
-            >
-              <ArrowLeft className="mr-2" /> Volver a información de contacto
-            </button>
-          </div>
+          <Card className="border-red-200 dark:border-red-800">
+            <CardHeader>
+              <CardTitle className="text-red-700 dark:text-red-400 flex items-center">
+                <svg className="size-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                Error al cargar métodos de envío
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">{error}</p>
+              <Button 
+                variant="destructive"
+                onClick={() => router.push('/checkout/contact')}
+              >
+                <ArrowLeft className="mr-2" /> Volver a información de contacto
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -182,125 +256,163 @@ export default function ShippingPage() {
     <div className="container mx-auto px-4 py-8 bg-white dark:bg-zinc-950 text-gray-800 dark:text-gray-100">
       <div className="max-w-3xl mx-auto">
         {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
-                <Check className="w-5 h-5" />
+        {/* Progress Steps */}
+        <Card className="mb-8">
+            <CardContent>
+              <div className="flex items-center justify-between py-2">
+                <div className="flex flex-col items-center">
+                  <div className="size-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground">
+                    1
+                  </div>
+                  <span className="text-sm mt-2">Contacto</span>
+                </div>
+                <div className="flex-1 h-1 mx-4 bg-primary">
+                  <div className="size-full bg-primary"></div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="size-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground">
+                    2
+                  </div>
+                  <span className="text-sm mt-2">Envío</span>
+                </div>
+                <div className="flex-1 h-1 mx-4 bg-muted"></div>
+                <div className="flex flex-col items-center">
+                  <div className="size-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground">
+                    3
+                  </div>
+                  <span className="text-sm mt-2">Pago</span>
+                </div>
               </div>
-              <span className="text-sm mt-2">Contacto</span>
-            </div>
-            <div className="flex-1 h-1 mx-4 bg-blue-600">
-              <div className="h-full w-full bg-blue-600"></div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
-                2
-              </div>
-              <span className="text-sm mt-2">Envío</span>
-            </div>
-            <div className="flex-1 h-1 mx-4 bg-gray-300 dark:bg-gray-700">
-              <div className="h-full w-0 bg-blue-600"></div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400">
-                3
-              </div>
-              <span className="text-sm mt-2">Pago</span>
-            </div>
-          </div>
-        </div>
+            </CardContent>
+          </Card>
 
         <h1 className="text-2xl font-bold mb-6 text-center">Método de Envío</h1>
         
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-md">
+        {/* Main Content */}
+        <div className="space-y-6">
+          {/* Contact Summary */}
           {contactData && (
-            <div className="mb-6 p-4 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold mb-2 flex items-center">
-                <MapPin className="mr-2" /> Dirección de Envío
-              </h2>
-              <p className="mb-1"><span className="font-medium">{contactData.name} {contactData.surname}</span></p>
-              <p className="mb-1">{contactData.address}</p>
-              <p className="mb-1">{municipalityName || contactData.municipality}, {contactData.city}</p>
-              <p className="mb-1">{regionName || contactData.region}, Chile</p>
-              <button 
-                onClick={() => router.push('/checkout/contact')}
-                className="mt-3 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm flex items-center"
-              >
-                <ArrowLeft className="mr-1" /> Editar información
-              </button>
-            </div>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl flex items-center">
+                  <MapPin className="mr-2" /> Dirección de contacto
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="font-medium">{contactData?.name} {contactData?.surname}</p>
+                    <p className="text-muted-foreground">{contactData?.email}</p>
+                    <p className="text-muted-foreground">{contactData?.phone}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">{contactData?.address}</p>
+                    <p className="text-muted-foreground">{regionName}, {municipalityName}</p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-primary hover:text-primary"
+                    onClick={() => router.push('/checkout/contact')}
+                  >
+                    Editar información
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
           
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Truck className="mr-2" /> Selecciona un método de envío
-            </h2>
-            
-            {shippingMethods.length === 0 ? (
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg text-yellow-700 dark:text-yellow-200">
-                <p className="flex items-center">
-                  <Package className="mr-2" />
-                  No hay métodos de envío disponibles para tu ubicación.
-                </p>
+          {/* Shipping Method Selection */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center">
+                <div className="size-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-4">
+                  <Truck size={20} />
+                </div>
+                <CardTitle>Selecciona un método de envío</CardTitle>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {shippingMethods.map((method) => (
-                  <div 
-                    key={method.id}
-                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                      selectedMethod === method.id 
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-700' 
-                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
-                    onClick={() => setSelectedMethod(method.id)}
-                  >
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        id={`method-${method.id}`}
-                        name="shipping-method"
-                        checked={selectedMethod === method.id}
-                        onChange={() => setSelectedMethod(method.id)}
-                        className="mr-3 h-5 w-5 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor={`method-${method.id}`} className="flex-grow cursor-pointer">
-                        <div className="flex justify-between">
-                          <span className="font-medium">{method.name}</span>
-                          <span className="font-semibold">
-                            {method.free_shipping ? 'Gratis' : (method.fee && method.fee.length > 0 ? `$${method.fee[0].value.toLocaleString()}` : 'Consultar')}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          {method.services && method.services.length > 0 
-                            ? `Servicio: ${method.services[0].original_service_name || method.services[0].service_name || method.services[0].name || method.type}`
-                            : `Tipo: ${method.type}`}
-                        </p>
-                      </label>
+            </CardHeader>
+            <CardContent>
+              {shippingMethods.length === 0 ? (
+                <Card className="border-yellow-200 dark:border-yellow-800">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center space-x-2 text-yellow-700 dark:text-yellow-200">
+                      <Package className="size-5" />
+                      <p className="font-medium">No hay métodos de envío disponibles para tu ubicación.</p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Por favor revisa la dirección ingresada o contacta al administrador para obtener ayuda.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {shippingMethods.map((method) => (
+                    <div 
+                      key={method.id}
+                      className={`border rounded-md p-4 cursor-pointer transition-all ${
+                        selectedMethod === method.id 
+                          ? 'border-primary ring-1 ring-primary' 
+                          : 'border-input hover:border-muted-foreground'
+                      }`}
+                      onClick={() => setSelectedMethod(method.id)}
+                    >
+                      <div className="flex items-center">
+                        <div className="shrink-0 mr-3">
+                          <div className={`size-5 rounded-full border-2 flex items-center justify-center ${selectedMethod === method.id ? 'border-primary' : 'border-muted-foreground'}`}>
+                            {selectedMethod === method.id && (
+                              <div className="size-3 rounded-full bg-primary"></div>
+                            )}
+                          </div>
+                          <input
+                            type="radio"
+                            id={`method-${method.id}`}
+                            name="shipping-method"
+                            checked={selectedMethod === method.id}
+                            onChange={() => setSelectedMethod(method.id)}
+                            className="sr-only"
+                          />
+                        </div>
+                        
+                        <label htmlFor={`method-${method.id}`} className="grow cursor-pointer">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">{method.name}</span>
+                            <span className={`font-medium ${method.free_shipping ? 'text-green-600 dark:text-green-400' : ''}`}>
+                              {method.free_shipping ? 'Gratis' : (method.fee && method.fee.length > 0 ? `$${method.fee[0].value.toLocaleString()}` : 'Consultar')}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {method.services && method.services.length > 0 
+                              ? `Servicio: ${method.services[0].original_service_name || method.services[0].service_name || method.services[0].name || method.type}`
+                              : `Tipo: ${method.type}`}
+                          </p>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
           
-          <div className="flex justify-between mt-8">
-            <button
-              type="button"
+          <div className="mt-8 flex justify-between space-x-2">
+            <Button
+              variant="outline"
               onClick={() => router.push('/checkout/contact')}
-              className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center"
+              className="flex items-center gap-2"
             >
-              <ArrowLeft className="mr-2" /> Volver
-            </button>
-            <button
-              type="button"
+              <ArrowLeft size={16} /> Volver a contacto
+            </Button>
+            
+            <Button
               onClick={handleContinue}
-              disabled={!selectedMethod || shippingMethods.length === 0}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors flex items-center"
+              disabled={!selectedMethod || isLoading}
+              className="flex items-center gap-2"
             >
-              Continuar a Pago <ArrowRight className="ml-2" />
-            </button>
+              Continuar a pago <ArrowRight size={16} />
+            </Button>
           </div>
         </div>
       </div>
