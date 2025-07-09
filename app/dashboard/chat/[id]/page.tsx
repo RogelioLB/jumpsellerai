@@ -1,7 +1,8 @@
 import { getChatById, getMessagesByChatId } from '@/lib/db/queries';
 import { Chat } from '@/components/chat';
 import type { VisibilityType } from '@/components/visibility-selector';
-import type { UIMessage} from 'ai';
+import type { UIMessage } from 'ai';
+
 
 // Componente servidor para mostrar el Chat con SSR
 export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
@@ -27,7 +28,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
       id: msg.id,
       role: msg.role as 'user' | 'assistant',
       createdAt: new Date(msg.createdAt),
-      parts: msg.parts,
+      parts: msg.parts as UIMessage['parts'],
       attachments: msg.attachments,
       content:""
     }));
