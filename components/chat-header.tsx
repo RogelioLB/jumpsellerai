@@ -40,7 +40,9 @@ function PureChatHeader({
   return (
     <header className="flex sticky justify-between top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
       <div className="flex items-center gap-2">
+        {!isReadonly && (
         <SidebarToggle />
+        )}
         {(!sidebarOpen || windowWidth < 768) && (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -70,16 +72,18 @@ function PureChatHeader({
       )}
       </div>
 
-      <Button
-        variant="outline"
-        className="order-1 md:order-4 relative"
-        onClick={() => openCart()}
+      {!isReadonly && (
+        <Button
+          variant="outline"
+          className="order-1 md:order-4 relative"
+          onClick={() => openCart()}
       >
         <ShoppingCartIcon />
         {items.length > 0 && (
           <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 bg-primary text-primary-foreground rounded-full size-5" >{items.length}</span>
         )}
       </Button>
+    )}
     </header>
   );
 }

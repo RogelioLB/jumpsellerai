@@ -42,6 +42,28 @@ import { ChatSDKError } from '../errors';
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
 
+export async function getUsersChats(){
+  try{
+    const chats = (await db.select().from(chat).leftJoin(user, eq(user.id, chat.userId)));
+    const u = new Map<string, User>();
+    const userChats = new Map<string, Chat[]>();
+    
+    for(const chat of chats){
+      if(!u.has(chat.User?.id as string)){
+        u.set(chat.User?.id as string, chat.User as User);
+        userChats.set(chat.User?.id as string, []);
+      }
+      userChats.get(chat.User?.id as string)!.push(chat.Chat as Chat);
+    }
+    return {users: u, userChats: userChats};
+  }catch(error){
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get users chats',
+    );
+  }
+}
+
 export async function getUser(email: string): Promise<Array<User>> {
   try {
     return await db.select().from(user).where(eq(user.email, email));
