@@ -37,14 +37,18 @@ export default function DashboardClient({ children, users, chatsMap }: Dashboard
 
   return (
     <div className="flex h-full overflow-hidden">
-      {/* Sidebar principal de navegación - fijo en desktop */}
-      <div className="w-16 h-full shrink-0 border-r bg-background">
+      {/* Sidebar principal de navegación - fijo en desktop con animación */}
+      <div className="w-16 h-full shrink-0 border-r bg-background transition-all duration-300 ease-in-out">
         <SidebarNav pathname={pathname} />
       </div>
       
-      {/* Sidebar de usuarios y chats - visible solo en rutas de chat */}
-      {pathname?.includes('/dashboard/chat') && (
-        <div className="h-screen shrink-0 border-r bg-background overflow-hidden">
+      {/* Sidebar de usuarios y chats - con animación de entrada/salida */}
+      <div 
+        className={`h-full shrink-0 border-r bg-background overflow-hidden transition-all duration-300 ease-in-out ${pathname?.includes('/dashboard/chat') 
+          ? 'opacity-100 translate-x-0' 
+          : 'opacity-0 -translate-x-full w-0 border-r-0'}`}
+      >
+        {pathname?.includes('/dashboard/chat') && (
           <UserChats
             users={users}
             chatsMap={chatsMap}
@@ -52,16 +56,18 @@ export default function DashboardClient({ children, users, chatsMap }: Dashboard
             defaultSelectedChatId={chatId}
             isMobileView={false}
           />
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Contenido principal */}
-      <div className="flex-1 overflow-auto bg-background">
-        <div className="max-w-4xl mx-auto px-4">
+      {/* Contenido principal con animación */}
+      <div className="flex-1 overflow-auto bg-background transition-all duration-300 ease-in-out">
+        <div 
+          className="max-w-4xl mx-auto px-4  transition-all duration-300 ease-in-out opacity-100"
+        >
           <SidebarProvider>
             <SidebarInset>
-          {children}
-          </SidebarInset>
+            {children}
+            </SidebarInset>
           </SidebarProvider>
         </div>
       </div>

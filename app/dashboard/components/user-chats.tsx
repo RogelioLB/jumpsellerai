@@ -111,7 +111,7 @@ export default function UserChats({
   };
 
   return (
-    <div className="flex h-full border-r">
+    <div className="flex h-screen w-full transition-all duration-300 ease-in-out">
       {/* Lista de usuarios */}
       <div className="w-64 border-r flex flex-col h-full">
         <div className="p-4 border-b">
@@ -131,8 +131,8 @@ export default function UserChats({
             {filteredUsers.map((user) => (
               <button
                 key={user.id}
-                className={`w-full flex items-center space-x-3 p-2 rounded-md hover:bg-accent transition-colors ${
-                  activeUser?.id === user.id ? 'bg-accent' : ''
+                className={`w-full flex items-center space-x-3 p-2 rounded-md hover:bg-accent transition-all duration-200 ease-in-out hover:scale-[1.02] ${
+                  activeUser?.id === user.id ? 'bg-accent shadow-sm' : ''
                 }`}
                 onClick={() => handleUserSelect(user)}
               >
@@ -166,8 +166,8 @@ export default function UserChats({
                 filteredChats.map((chat) => (
                   <button
                     key={chat.id}
-                    className={`w-full text-left p-2 rounded-md hover:bg-accent transition-colors ${
-                      activeChat?.id === chat.id ? 'bg-accent' : ''
+                    className={`w-full text-left p-2 rounded-md hover:bg-accent transition-all duration-200 ease-in-out hover:-translate-y-0.5 ${
+                      activeChat?.id === chat.id ? 'bg-accent shadow-sm' : ''
                     }`}
                     onClick={() => handleChatSelect(chat)}
                   >
