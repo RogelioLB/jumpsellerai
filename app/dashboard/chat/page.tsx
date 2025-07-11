@@ -9,18 +9,9 @@ export default async function ChatPage() {
         <h1 className="text-3xl font-bold">Chat con KreadoresPro</h1>
         
         <p className="text-lg text-muted-foreground">
-          Selecciona una conversación de la lista o inicia una nueva para obtener ayuda
-          con tus preguntas y necesidades.
+          Selecciona una conversación de la lista para ver el chat
         </p>
         
-        <div className="flex justify-center">
-          <a 
-            href="/dashboard/chat/new"
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
-          >
-            Nuevo Chat
-          </a>
-        </div>
       </div>
     </div>
   );

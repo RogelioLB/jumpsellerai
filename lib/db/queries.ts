@@ -42,6 +42,18 @@ import { ChatSDKError } from '../errors';
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
 
+export async function getUserById(id: string): Promise<User | null> {
+  try {
+    const users = await db.select().from(user).where(eq(user.id, id));
+    return users.length > 0 ? users[0] : null;
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get user by id',
+    );
+  }
+}
+
 export async function getUsersChats(){
   try{
     const chats = (await db.select().from(chat).leftJoin(user, eq(user.id, chat.userId)));
@@ -79,7 +91,7 @@ export async function createUser(email: string, password: string) {
   const hashedPassword = generateHashedPassword(password);
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    return await db.insert(user).values({ email, password: hashedPassword, type: 'user' });
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to create user');
   }

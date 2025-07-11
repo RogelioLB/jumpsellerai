@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
+import { CheckUserExists } from './components/check-user-exists';
 
 export const metadata: Metadata = {
   title: 'KreadoresPro',
@@ -82,7 +83,10 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <Toaster position="top-center" />
-          <SessionProvider>{children}</SessionProvider>
+          <SessionProvider>
+            <CheckUserExists />
+            {children}
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

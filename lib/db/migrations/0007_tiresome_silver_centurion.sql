@@ -1,0 +1,1 @@
+ALTER TABLE "User" ADD COLUMN "type" varchar DEFAULT 'guest' NOT NULL;

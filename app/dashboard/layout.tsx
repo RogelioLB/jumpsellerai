@@ -6,21 +6,19 @@ import { redirect } from 'next/navigation';
 import DashboardClient from './components/dashboard-client';
 import { getUsersAndChats } from '@/lib/data';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { auth } from '../(auth)/auth';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  // Verificar autenticación (ejemplo básico - implementar según necesidades)
-  // En este caso omitimos la verificación de JWT para simplificar
-  const cookieStore = await cookies();
+  const session = await auth();
   
-  // Comentamos la verificación del token ya que no tenemos la implementación de JWT
-  // Si necesitas agregar autenticación real, descomenta e implementa estas líneas
-  /*
-  const token = cookieStore.get('token');
-  if (!token) {
+  if (session?.user.type==="guest" || !session) {
     redirect('/login');
   }
-  */
   
+  if(session?.user.type !=="admin"){
+    return <div>Unauthorized</div>
+  }
+
   // Obtener datos del servidor usando la función que conecta con la base de datos
   const { users, chatsMap } = await getUsersAndChats();
   

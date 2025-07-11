@@ -1,12 +1,12 @@
 import { compare } from 'bcrypt-ts';
 import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { createGuestUser, getUser } from '@/lib/db/queries';
+import { createGuestUser, getUser, getUserById } from '@/lib/db/queries';
 import { authConfig } from './auth.config';
 import { DUMMY_PASSWORD } from '@/lib/constants';
 import type { DefaultJWT } from 'next-auth/jwt';
 
-export type UserType = 'guest' | 'regular';
+export type UserType = 'guest' | 'regular' | 'admin';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -14,6 +14,7 @@ declare module 'next-auth' {
       id: string;
       type: UserType;
     } & DefaultSession['user'];
+    userMissing?: boolean;
   }
 
   interface User {
@@ -59,7 +60,7 @@ export const {
 
         if (!passwordsMatch) return null;
 
-        return { ...user, type: 'regular' };
+        return { ...user, type: user.type !== "user" ? "regular" : "admin" };
       },
     }),
     Credentials({
@@ -81,9 +82,22 @@ export const {
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.type = token.type;
+      // Check if the user exists in the database
+      if (token.id) {
+        const userExists = await getUserById(token.id);
+        
+        // If the user doesn't exist (was deleted), sign out and force reload
+        if (!userExists) {
+          // We'll handle this on the client side with a custom property
+          session.userMissing = true;
+          return session;
+        }
+        
+        // User exists, proceed normally
+        if (session.user) {
+          session.user.id = token.id;
+          session.user.type = token.type;
+        }
       }
 
       return session;
