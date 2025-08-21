@@ -245,7 +245,7 @@ export async function POST(request: Request) {
       return error.toResponse();
     }
     console.error(error);
-    return new ChatSDKError('internal:chat').toResponse();
+    return new Response(error as string, { status: 500 });
   }
 }
 
