@@ -244,6 +244,8 @@ export async function POST(request: Request) {
     if (error instanceof ChatSDKError) {
       return error.toResponse();
     }
+    console.error(error);
+    return new ChatSDKError('internal:chat').toResponse();
   }
 }
 
