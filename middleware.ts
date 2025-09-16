@@ -17,6 +17,90 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // CORS for chat API
+  if (pathname.startsWith('/api/chat')) {
+    const origin = request.headers.get('origin') ?? '';
+    const allowedOrigin = isDevelopmentEnvironment
+      ? origin || '*'
+      : process.env.CORS_ALLOWED_ORIGIN ?? '';
+    const allowCredentials = allowedOrigin !== '*'
+      && allowedOrigin !== '';
+
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      const response = new Response(null, { status: 204 });
+      response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+      response.headers.set('Vary', 'Origin');
+      if (allowCredentials) {
+        response.headers.set('Access-Control-Allow-Credentials', 'true');
+      }
+      response.headers.set(
+        'Access-Control-Allow-Methods',
+        'GET,POST,DELETE,OPTIONS',
+      );
+      response.headers.set(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+      );
+      response.headers.set('Access-Control-Max-Age', '86400');
+      return response;
+    }
+
+    // Attach CORS headers to all /api/chat responses
+    const response = NextResponse.next();
+    response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+    response.headers.set('Vary', 'Origin');
+    if (allowCredentials) {
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+    }
+    response.headers.set('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
+    response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    );
+    return response;
+  }
+
+  // CORS for widget chat API (no auth)
+  if (pathname.startsWith('/api/widget-chat')) {
+    const origin = request.headers.get('origin') ?? '';
+    const allowedOrigin = isDevelopmentEnvironment
+      ? origin || '*'
+      : process.env.CORS_ALLOWED_ORIGIN ?? '';
+    const allowCredentials = allowedOrigin !== '*'
+      && allowedOrigin !== '';
+
+    // Preflight
+    if (request.method === 'OPTIONS') {
+      const response = new Response(null, { status: 204 });
+      response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+      response.headers.set('Vary', 'Origin');
+      if (allowCredentials) {
+        response.headers.set('Access-Control-Allow-Credentials', 'true');
+      }
+      response.headers.set('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+      response.headers.set(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+      );
+      response.headers.set('Access-Control-Max-Age', '86400');
+      return response;
+    }
+
+    const response = NextResponse.next();
+    response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+    response.headers.set('Vary', 'Origin');
+    if (allowCredentials) {
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+    }
+    response.headers.set('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    );
+    return response;
+  }
+
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,

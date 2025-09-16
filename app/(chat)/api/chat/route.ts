@@ -195,6 +195,7 @@ export async function POST(request: Request) {
                   messages: [message],
                   responseMessages: response.messages,
                 });
+                console.log(assistantMessage);
 
                 await saveMessages({
                   messages: [

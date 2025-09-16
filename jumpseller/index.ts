@@ -326,7 +326,7 @@ export const Jumpseller = {
     getCategories: async () => {
         try {
             const response = await fetch(`https://api.jumpseller.com/v1/categories.json?login=${process.env.JUMPSELLER_LOGIN}&authtoken=${process.env.JUMPSELLER_AUTHTOKEN}`);
-            
+            console.log(`https://api.jumpseller.com/v1/categories.json?login=${process.env.JUMPSELLER_LOGIN}&authtoken=${process.env.JUMPSELLER_AUTHTOKEN}`);
             if (!response.ok) {
                 throw new Error(`Error fetching categories: ${response.statusText}`);
             }
@@ -337,8 +337,9 @@ export const Jumpseller = {
                 console.error('Unexpected response format from Jumpseller API');
                 return [];
             }
-            
-            return data;
+
+            const mappedData = data.map(({category}) => ({ id: category.id, name: category.name }));
+            return mappedData;
         } catch (error) {
             console.error('Error fetching categories:', error);
             return [];
@@ -352,14 +353,16 @@ export const Jumpseller = {
                 throw new Error(`Error fetching products by category: ${response.statusText}`);
             }
             
-            const data = await response.json();
+            const data : ProductResponse[] = await response.json();
             
             if (!Array.isArray(data)) {
                 console.error('Unexpected response format from Jumpseller API');
                 return [];
             }
+
+            const products = data.map(({product}) => ({ id: product.id, name: product.name, price: product.price, meta_description: product.meta_description, images: product.images }));
             
-            return data;
+            return products;
         } catch (error) {
             console.error('Error fetching products by category:', error);
             return [];

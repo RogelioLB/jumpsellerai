@@ -1,5 +1,5 @@
 import { Jumpseller } from "@/jumpseller";
-import { ProductResponse } from "@/jumpseller/types";
+import { Product, ProductResponse } from "@/jumpseller/types";
 import { tool } from "ai";
 import { z } from "zod";
 
@@ -11,15 +11,7 @@ export const getProductsByCategory = tool({
           .describe("The category ID to get the products from"),
       }),
       execute: async ({ categoryId }) => {
-        const products: ProductResponse[] = await Jumpseller.getProductsByCategory(categoryId);
-        console.log(products[0].product)
-        return products.map(({product})=>({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            images: product.images,
-            categories: product.categories.map(cat=>cat.name),
-            meta_description: product.meta_description,
-          }));
+        const products = await Jumpseller.getProductsByCategory(categoryId);
+        return products;
       },
 })
