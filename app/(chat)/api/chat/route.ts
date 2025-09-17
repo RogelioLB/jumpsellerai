@@ -36,8 +36,6 @@ import { after } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
 import { ChatSDKError } from '@/lib/errors';
-import searchProduct from './tools/searchProduct';
-import getProducts from './tools/getProducts';
 import searchProducts from './tools/searchProducts';
 import findCustomer from './tools/findCustomer';
 import getCustomerOrders from './tools/getCustomerOrders';
@@ -46,6 +44,7 @@ import trackOrder from './tools/trackOrder';
 import { getContext } from '@/lib/ai/tools/get-context';
 import { getCategories } from './tools/getCategories';
 import { getProductsByCategory } from './tools/getProductsByCategory';
+import generateProductsDisplay from './tools/generateProductsDisplay';
 import { openai } from '@ai-sdk/openai';
 import { google } from '@ai-sdk/google';
 
@@ -149,16 +148,14 @@ export async function POST(request: Request) {
 
     const stream = createDataStream({
       execute: (dataStream) => {
+        console.log('🚀 Iniciando streamText con', messages.length, 'mensajes');
+        
         const result = streamText({
-          model: google("gemini-2.0-flash-lite"),
+          model: google("gemini-2.0-flash"),
           system: systemPrompt,
           messages,
-          maxSteps: 5,
-          experimental_activeTools:
-            selectedChatModel === 'chat-model-reasoning'
-              ? []
-              : [
-                "searchProduct",
+          maxSteps: 10,
+          experimental_activeTools:[
                 "findCustomer",
                 "getCustomerOrders",
                 "getDiscounts",
@@ -166,11 +163,12 @@ export async function POST(request: Request) {
                 "getContext",
                 "getCategories",
                 "getProductsByCategory",
+                "generateProductsDisplay",
+                "searchProducts",
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           experimental_generateMessageId: generateUUID,
           tools: {
-            searchProduct,
             findCustomer,
             getCustomerOrders,
             getDiscounts,
@@ -178,8 +176,33 @@ export async function POST(request: Request) {
             getContext,
             getCategories,
             getProductsByCategory,
+            generateProductsDisplay,
+            searchProducts
           },
-          onFinish: async ({ response }) => {
+          onStepFinish: ({ stepType, toolCalls, toolResults }) => {
+            console.log('🔄 Step finished:', { stepType, toolCallsCount: toolCalls?.length });
+            if (toolCalls) {
+              toolCalls.forEach(call => {
+                console.log('🔧 Tool called:', call.toolName);
+              });
+            }
+            if (toolResults) {
+              toolResults.forEach((result, index) => {
+                console.log('📊 Tool result', index, ':', result.result ? 'SUCCESS' : 'ERROR');
+                if (result.result) {
+                  console.log('📄 Result preview:', JSON.stringify(result.result).substring(0, 200));
+                }
+              });
+            }
+          },
+          onFinish: async ({ response, finishReason, usage }) => {
+            console.log('🏁 Stream finished:', { finishReason, usage });
+            
+            if (finishReason === 'error') {
+              console.error('❌ Stream finished with error');
+              return;
+            }
+            
             if (session.user?.id) {
               try {
                 const assistantId = getTrailingMessageId({
@@ -196,7 +219,6 @@ export async function POST(request: Request) {
                   messages: [message],
                   responseMessages: response.messages,
                 });
-                console.log(assistantMessage);
 
                 await saveMessages({
                   messages: [
@@ -211,10 +233,15 @@ export async function POST(request: Request) {
                     },
                   ],
                 });
-              } catch (_) {
+              } catch (error) {
+                console.log(error);
                 console.error('Failed to save chat');
               }
             }
+          },
+          onError: (error) => {
+            console.error('🚨 StreamText Error:', error);
+
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
@@ -228,7 +255,8 @@ export async function POST(request: Request) {
           sendReasoning: true,
         });
       },
-      onError: () => {
+      onError: (err) => {
+        console.error('Error during streamText:', err);
         return 'Oops, an error occurred!';
       },
     });

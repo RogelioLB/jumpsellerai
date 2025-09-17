@@ -21,7 +21,35 @@ import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import Products from './tools/products';
 import Tracking from './tools/tracking';
-import Product from './tools/product';
+
+// Componente de loader para productos
+const ProductsLoader = ({ toolName, args }: { toolName: string; args: any }) => {
+  const getLoadingMessage = () => {
+    switch (toolName) {
+      case 'getCategories':
+        return 'Obteniendo categorías disponibles...';
+      case 'getProductsByCategory':
+        return 'Buscando productos en la categoría...';
+      case 'searchProducts':
+        return `Buscando productos: "${args?.query || ''}"...`;
+      case 'generateProductsDisplay':
+        return 'Organizando y filtrando productos encontrados...';
+      default:
+        return 'Procesando productos...';
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+      <div className="flex space-x-1">
+        <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+        <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+        <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+      </div>
+      <span className="text-sm text-muted-foreground">{getLoadingMessage()}</span>
+    </div>
+  );
+};
 
 const PurePreviewMessage = ({
   chatId,
@@ -185,6 +213,8 @@ const PurePreviewMessage = ({
                           args={args}
                           isReadonly={isReadonly}
                         />
+                      ) : ['getCategories', 'getProductsByCategory', 'searchProducts', 'generateProductsDisplay'].includes(toolName) ? (
+                        <ProductsLoader toolName={toolName} args={args} />
                       ) : null}
                     </div>
                   );
@@ -195,14 +225,10 @@ const PurePreviewMessage = ({
 
                   return (
                     <div key={toolCallId} className="w-full">
-                      { toolName === "getProducts" ? (
-                        <Products result={result.products} />
+                      { toolName === "generateProductsDisplay" ? (
+                        <Products result={result.displayObject?.data?.products || []} />
                       ) : toolName === "trackOrder" ? (
                         <Tracking data={result.data} />
-                      ) :toolName === "searchProduct" ? (
-                        <Product product={result.product} />
-                      ) : toolName === "getProductsByCategory" ? (
-                        <Products result={result || []} />
                       ) : null}
                     </div>
                   );

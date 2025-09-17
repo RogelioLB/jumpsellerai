@@ -347,10 +347,28 @@ export const Jumpseller = {
     },
     getProductsByCategory: async (categoryId: number) => {
         try {
-            const response = await fetch(`https://api.jumpseller.com/v1/products/category/${categoryId}.json?login=${process.env.JUMPSELLER_LOGIN}&authtoken=${process.env.JUMPSELLER_AUTHTOKEN}`);
-            console.log(`https://api.jumpseller.com/v1/products/category/${categoryId}.json?login=${process.env.JUMPSELLER_LOGIN}&authtoken=${process.env.JUMPSELLER_AUTHTOKEN}`)
+            console.log(`🔍 Fetching products for category ${categoryId}...`);
+            
+            // Crear AbortController para timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos timeout
+            
+            const response = await fetch(
+                `https://api.jumpseller.com/v1/products/category/${categoryId}.json?login=${process.env.JUMPSELLER_LOGIN}&authtoken=${process.env.JUMPSELLER_AUTHTOKEN}&limit=20`, 
+                {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json',
+                        'User-Agent': 'Kreadores-Bot/1.0'
+                    }
+                }
+            );
+            
+            clearTimeout(timeoutId);
+            console.log(`📡 API Response status: ${response.status}`);
+            
             if (!response.ok) {
-                throw new Error(`Error fetching products by category: ${response.statusText}`);
+                throw new Error(`Error fetching products by category: ${response.status} ${response.statusText}`);
             }
             
             const data : ProductResponse[] = await response.json();
@@ -360,9 +378,15 @@ export const Jumpseller = {
                 return [];
             }
 
-            const products = data.map(({product}) => ({ id: product.id, name: product.name, price: product.price, meta_description: product.meta_description, images: product.images }));
-            
-            return products;
+            const products = data.filter(({product}) => product.status && product.stock>0)
+            const mappedProducts = products.map(({product}) => ({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                images: product.images.slice(0,3),
+                meta_description: product.meta_description,
+            }))
+            return mappedProducts;
         } catch (error) {
             console.error('Error fetching products by category:', error);
             return [];
