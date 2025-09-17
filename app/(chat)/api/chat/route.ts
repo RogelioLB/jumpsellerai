@@ -47,6 +47,7 @@ import { getContext } from '@/lib/ai/tools/get-context';
 import { getCategories } from './tools/getCategories';
 import { getProductsByCategory } from './tools/getProductsByCategory';
 import { openai } from '@ai-sdk/openai';
+import { google } from '@ai-sdk/google';
 
 export const maxDuration = 60;
 
@@ -149,7 +150,7 @@ export async function POST(request: Request) {
     const stream = createDataStream({
       execute: (dataStream) => {
         const result = streamText({
-          model: openai("gpt-4.1-nano"),
+          model: google("gemini-2.5-flash"),
           system: systemPrompt,
           messages,
           maxSteps: 5,
